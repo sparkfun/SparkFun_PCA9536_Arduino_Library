@@ -2,7 +2,7 @@
   This is a library written for the PCA9536 4-bit I2C I/O Expander
   SparkFun sells these at its website: www.sparkfun.com
   Do you like this library? Help support SparkFun. Buy a board!
-  https://www.sparkfun.com/products/TODO
+  https://www.sparkfun.com/products/14733
   Written by Jim Lindblom @ SparkFun Electronics, May 4th, 2018
   The PCA9536 is a 4-bit I/O digital expander, which communicates via an I2C bus.
   The expander can read or write four separate I/O.
@@ -33,11 +33,13 @@
 
 #include <Wire.h>
 
+//  Valid PCA9536 addresses
 typedef enum {
     PCA9536_ADDRESS = 0x41,
     PCA9536_ADDRESS_INVALID = 0xFF
 } PCA9536_Address_t;
 
+// PCA9536 registers:
 typedef enum {
     PCA9536_REGISTER_INPUT_PORT         = 0x00,
     PCA9536_REGISTER_OUTPUT_PORT        = 0x01,
@@ -46,6 +48,7 @@ typedef enum {
     PCA9536_REGISTER_INVALID
 } PCA9536_REGISTER_t;
 
+// PCA9536 error code returns:
 typedef enum {
     PCA9536_ERROR_READ            = -4,
     PCA9536_ERROR_WRITE           = -3,
@@ -55,6 +58,7 @@ typedef enum {
 } PCA9536_error_t;
 const PCA9536_error_t PCA9536_SUCCESS = PCA9536_ERROR_SUCCESS;
 
+// PCA9536 invert/normal values:
 typedef enum {
     PCA9536_RETAIN,
     PCA9536_INVERT,
@@ -73,18 +77,26 @@ class PCA9536 {
 public:
     PCA9536();
 
-    PCA9536_error_t begin(TwoWire &wirePort = Wire);
+    // begin initializes the Wire port and I/O expander
+    boolean begin(void);
+    // give begin a TwoWire port to specify the I2C port
+    PCA9536_error_t begin(TwoWire &wirePort);
 
+    // setDebugStream to enable library debug statements
     void setDebugStream(Stream &debugPort = Serial);
 
+    // pinMode can set a pin (0-3) to INPUT or OUTPUT
     PCA9536_error_t pinMode(uint8_t pin, uint8_t mode);
 
+    // digitalWrite and write can be used to set a pin HIGH or LOW
     PCA9536_error_t digitalWrite(uint8_t pin, uint8_t value);
     PCA9536_error_t write(uint8_t pin, uint8_t value);
 
+    // digitalRead and read can be used to read a pin (0-3)
     uint8_t digitalRead(uint8_t pin);
     uint8_t read(uint8_t pin);
 
+    // invert and revert can be used to invert (or not) the I/O logic during a read
     PCA9536_error_t invert(uint8_t pin, PCA9536_invert_t inversion = PCA9536_INVERT);
     PCA9536_error_t revert(uint8_t pin);
 

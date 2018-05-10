@@ -2,7 +2,7 @@
   This is a library written for the PCA9536 4-bit I2C I/O Expander
   SparkFun sells these at its website: www.sparkfun.com
   Do you like this library? Help support SparkFun. Buy a board!
-  https://www.sparkfun.com/products/TODO
+  https://www.sparkfun.com/products/14733
   Written by Jim Lindblom @ SparkFun Electronics, May 4th, 2018
   The PCA9536 is a 4-bit I/O digital expander, which communicates via an I2C bus.
   The expander can read or write four separate I/O.
@@ -38,6 +38,15 @@ PCA9536::PCA9536()
     _i2cPort = NULL;
     _debugPort = NULL;
     _deviceAddress = PCA9536_ADDRESS_INVALID;
+}
+
+boolean PCA9536::begin(void)
+{
+    if (begin(Wire) == PCA9536_ERROR_SUCCESS)
+    {
+        return true;
+    }
+    return false;
 }
 
 PCA9536_error_t PCA9536::begin(TwoWire &wirePort) 

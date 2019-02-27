@@ -51,9 +51,6 @@ boolean PCA9536::begin(void)
 
 PCA9536_error_t PCA9536::begin(TwoWire &wirePort) 
 {
-    uint8_t systemControl = 0;
-    PCA9536_error_t retVal;
-
     _deviceAddress = PCA9536_ADDRESS;
     _i2cPort = &wirePort;
 
@@ -133,7 +130,7 @@ uint8_t PCA9536::digitalRead(uint8_t pin)
     return read(pin);
 }
 
-PCA9536_error_t PCA9536::invert(uint8_t pin, PCA9536_invert_t inversion = PCA9536_INVERT)
+PCA9536_error_t PCA9536::invert(uint8_t pin, PCA9536_invert_t inversion)
 {
     PCA9536_error_t err;
     uint8_t invertRegister = 0;

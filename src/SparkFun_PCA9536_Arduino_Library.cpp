@@ -110,6 +110,19 @@ PCA9536_error_t PCA9536::digitalWrite(uint8_t pin, uint8_t value)
     return write(pin, value);
 }
 
+uint8_t PCA9536::readReg()
+{
+    PCA9536_error_t err;
+    uint8_t inputRegister = 0;
+
+    err = readI2CRegister(&inputRegister, PCA9536_REGISTER_INPUT_PORT);
+    if (err != PCA9536_ERROR_SUCCESS)
+    {
+        return err;
+    }
+    return (inputRegister & (0x0f));
+}
+
 uint8_t PCA9536::read(uint8_t pin)
 {
     PCA9536_error_t err;

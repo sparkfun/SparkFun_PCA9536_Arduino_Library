@@ -92,6 +92,9 @@ public:
     PCA9536_error_t digitalWrite(uint8_t pin, uint8_t value);
     PCA9536_error_t write(uint8_t pin, uint8_t value);
 
+    // readReg can be used to read the whole input register (4 bits)
+    uint8_t readReg();
+
     // digitalRead and read can be used to read a pin (0-3)
     uint8_t digitalRead(uint8_t pin);
     uint8_t read(uint8_t pin);

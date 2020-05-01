@@ -18,21 +18,36 @@
 
 PCA9536 io;
 
-void setup() {
+void setup()
+{
+  Serial.begin(115200);
+  Serial.println("PCA9536 example");
+
+  Wire.begin();
+
   // Initialize the PCA9536 with a begin function
-  io.begin();
-  for (int i = 0; i < 4; i++) {
+  if (io.begin() == false)
+  {
+    Serial.println("PCA9536 not detected. Please check wiring. Freezing...");
+    while (1)
+      ;
+  }
+
+  for (int i = 0; i < 4; i++)
+  {
     // pinMode can be used to set an I/O as OUTPUT or INPUT
     io.pinMode(i, OUTPUT);
   }
 }
 
-void loop() {
-  for (int i = 3; i >= 0; i--) {
+void loop()
+{
+  for (int i = 3; i >= 0; i--)
+  {
     // digitalWrite or write can be used to set an I/O value
     // (both perform the same function)
-    io.digitalWrite((i+1)%4, HIGH); // Turn last pin HIGH
-    io.write(i, LOW); // Turn this pin LOW
+    io.digitalWrite((i + 1) % 4, HIGH); // Turn last pin HIGH
+    io.write(i, LOW);                   // Turn this pin LOW
     delay(1000);
   }
 }

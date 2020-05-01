@@ -34,53 +34,57 @@
 #include <Wire.h>
 
 //  Valid PCA9536 addresses
-typedef enum {
+typedef enum
+{
     PCA9536_ADDRESS = 0x41,
     PCA9536_ADDRESS_INVALID = 0xFF
 } PCA9536_Address_t;
 
 // PCA9536 registers:
-typedef enum {
-    PCA9536_REGISTER_INPUT_PORT         = 0x00,
-    PCA9536_REGISTER_OUTPUT_PORT        = 0x01,
+typedef enum
+{
+    PCA9536_REGISTER_INPUT_PORT = 0x00,
+    PCA9536_REGISTER_OUTPUT_PORT = 0x01,
     PCA9536_REGISTER_POLARITY_INVERSION = 0x02,
-    PCA9536_REGISTER_CONFIGURATION      = 0x03,
+    PCA9536_REGISTER_CONFIGURATION = 0x03,
     PCA9536_REGISTER_INVALID
 } PCA9536_REGISTER_t;
 
 // PCA9536 error code returns:
-typedef enum {
-    PCA9536_ERROR_READ            = -4,
-    PCA9536_ERROR_WRITE           = -3,
+typedef enum
+{
+    PCA9536_ERROR_READ = -4,
+    PCA9536_ERROR_WRITE = -3,
     PCA9536_ERROR_INVALID_ADDRESS = -2,
-    PCA9536_ERROR_UNDEFINED       = -1,
-    PCA9536_ERROR_SUCCESS         = 1
+    PCA9536_ERROR_UNDEFINED = -1,
+    PCA9536_ERROR_SUCCESS = 1
 } PCA9536_error_t;
 const PCA9536_error_t PCA9536_SUCCESS = PCA9536_ERROR_SUCCESS;
 
 // PCA9536 invert/normal values:
-typedef enum {
+typedef enum
+{
     PCA9536_RETAIN,
     PCA9536_INVERT,
     PCA9536_INVERT_END
 } PCA9536_invert_t;
 
 // rgb, white LED definitions for QWIIC RGB Breakout
-enum {
+enum
+{
     PCA9536_WHITE, // 0
     PCA9536_RED,   // 1
     PCA9536_GREEN, // 2
     PCA9536_BLUE   // 3
 };
 
-class PCA9536 {
+class PCA9536
+{
 public:
     PCA9536();
 
-    // begin initializes the Wire port and I/O expander
-    boolean begin(void);
-    // give begin a TwoWire port to specify the I2C port
-    PCA9536_error_t begin(TwoWire &wirePort);
+    bool begin(TwoWire &wirePort = Wire);
+    bool isConnected();
 
     // setDebugStream to enable library debug statements
     void setDebugStream(Stream &debugPort = Serial);
@@ -105,12 +109,12 @@ public:
 
 private:
     TwoWire *_i2cPort; //The generic connection to user's chosen I2C hardware
-    Stream * _debugPort;
+    Stream *_debugPort;
     PCA9536_Address_t _deviceAddress;
 
-// I2C Read/Write
-    PCA9536_error_t readI2CBuffer(uint8_t * dest, PCA9536_REGISTER_t startRegister, uint16_t len);
-    PCA9536_error_t writeI2CBuffer(uint8_t * src, PCA9536_REGISTER_t startRegister, uint16_t len);
-    PCA9536_error_t readI2CRegister(uint8_t * dest, PCA9536_REGISTER_t registerAddress);
+    // I2C Read/Write
+    PCA9536_error_t readI2CBuffer(uint8_t *dest, PCA9536_REGISTER_t startRegister, uint16_t len);
+    PCA9536_error_t writeI2CBuffer(uint8_t *src, PCA9536_REGISTER_t startRegister, uint16_t len);
+    PCA9536_error_t readI2CRegister(uint8_t *dest, PCA9536_REGISTER_t registerAddress);
     PCA9536_error_t writeI2CRegister(uint8_t data, PCA9536_REGISTER_t registerAddress);
 };

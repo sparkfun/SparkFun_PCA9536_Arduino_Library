@@ -24,8 +24,16 @@
 #include <SparkFun_PCA9536_Arduino_Library.h>
 
 #ifdef DEBUG_PCA9536
-#define PCA9536_DEBUG(x) if (_debugPort != NULL) { _debugPort->print(x);}
-#define PCA9536_DEBUGLN(x) if (_debugPort != NULL) { _debugPort->println(x);}
+#define PCA9536_DEBUG(x)      \
+    if (_debugPort != NULL)   \
+    {                         \
+        _debugPort->print(x); \
+    }
+#define PCA9536_DEBUGLN(x)      \
+    if (_debugPort != NULL)     \
+    {                           \
+        _debugPort->println(x); \
+    }
 #define STORAGE(x) (x)
 #else
 #define PCA9536_DEBUG(x)
@@ -40,26 +48,22 @@ PCA9536::PCA9536()
     _deviceAddress = PCA9536_ADDRESS_INVALID;
 }
 
-boolean PCA9536::begin(void)
-{
-    if (begin(Wire) == PCA9536_ERROR_SUCCESS)
-    {
-        return true;
-    }
-    return false;
-}
-
-PCA9536_error_t PCA9536::begin(TwoWire &wirePort) 
+bool PCA9536::begin(TwoWire &wirePort)
 {
     _deviceAddress = PCA9536_ADDRESS;
     _i2cPort = &wirePort;
 
-    _i2cPort->begin();
-
-    return PCA9536_ERROR_SUCCESS;
+    return (isConnected());
 }
 
-void PCA9536::setDebugStream(Stream & debugPort)
+//Returns true if a device ack's at given address
+boolean PCA9536::isConnected(void)
+{
+    _i2cPort->beginTransmission((uint8_t)_deviceAddress);
+    return (_i2cPort->endTransmission() == 0);
+}
+
+void PCA9536::setDebugStream(Stream &debugPort)
 {
     _debugPort = &debugPort;
 }
@@ -69,17 +73,18 @@ PCA9536_error_t PCA9536::pinMode(uint8_t pin, uint8_t mode)
     PCA9536_error_t err;
     uint8_t cfgRegister = 0;
 
-    if (pin > 4) return PCA9536_ERROR_UNDEFINED;
-    
+    if (pin > 4)
+        return PCA9536_ERROR_UNDEFINED;
+
     err = readI2CRegister(&cfgRegister, PCA9536_REGISTER_CONFIGURATION);
     if (err != PCA9536_ERROR_SUCCESS)
     {
         return err;
     }
-    cfgRegister &= ~(1<<pin); // Clear pin bit
-    if (mode == INPUT) // Set the bit if it's being set to INPUT (opposite of Arduino)
+    cfgRegister &= ~(1 << pin); // Clear pin bit
+    if (mode == INPUT)          // Set the bit if it's being set to INPUT (opposite of Arduino)
     {
-        cfgRegister |= (1<<pin);
+        cfgRegister |= (1 << pin);
     }
     return writeI2CRegister(cfgRegister, PCA9536_REGISTER_CONFIGURATION);
 }
@@ -89,18 +94,19 @@ PCA9536_error_t PCA9536::write(uint8_t pin, uint8_t value)
     PCA9536_error_t err;
     uint8_t outputRegister = 0;
 
-    if (pin > 4) return PCA9536_ERROR_UNDEFINED;
-    
+    if (pin > 4)
+        return PCA9536_ERROR_UNDEFINED;
+
     err = readI2CRegister(&outputRegister, PCA9536_REGISTER_OUTPUT_PORT);
     if (err != PCA9536_ERROR_SUCCESS)
     {
         return err;
     }
     // TODO: Break out of here if it's already set correctly
-    outputRegister &= ~(1<<pin); // Clear pin bit
-    if (value == HIGH) // Set the bit if it's being set to HIGH (opposite of Arduino)
+    outputRegister &= ~(1 << pin); // Clear pin bit
+    if (value == HIGH)             // Set the bit if it's being set to HIGH (opposite of Arduino)
     {
-        outputRegister |= (1<<pin);
+        outputRegister |= (1 << pin);
     }
     return writeI2CRegister(outputRegister, PCA9536_REGISTER_OUTPUT_PORT);
 }
@@ -128,14 +134,15 @@ uint8_t PCA9536::read(uint8_t pin)
     PCA9536_error_t err;
     uint8_t inputRegister = 0;
 
-    if (pin > 4) return PCA9536_ERROR_UNDEFINED;
-    
+    if (pin > 4)
+        return PCA9536_ERROR_UNDEFINED;
+
     err = readI2CRegister(&inputRegister, PCA9536_REGISTER_INPUT_PORT);
     if (err != PCA9536_ERROR_SUCCESS)
     {
         return err;
     }
-    return (inputRegister & (1<<pin)) >> pin;
+    return (inputRegister & (1 << pin)) >> pin;
 }
 
 uint8_t PCA9536::digitalRead(uint8_t pin)
@@ -148,18 +155,19 @@ PCA9536_error_t PCA9536::invert(uint8_t pin, PCA9536_invert_t inversion)
     PCA9536_error_t err;
     uint8_t invertRegister = 0;
 
-    if (pin > 4) return PCA9536_ERROR_UNDEFINED;
-    
+    if (pin > 4)
+        return PCA9536_ERROR_UNDEFINED;
+
     err = readI2CRegister(&invertRegister, PCA9536_REGISTER_POLARITY_INVERSION);
     if (err != PCA9536_ERROR_SUCCESS)
     {
         return err;
     }
     // TODO: Break out of here if it's already set correctly
-    invertRegister &= ~(1<<pin); // Clear pin bit
+    invertRegister &= ~(1 << pin);   // Clear pin bit
     if (inversion == PCA9536_INVERT) // Set the bit if it's being set to inverted
     {
-        invertRegister |= (1<<pin);
+        invertRegister |= (1 << pin);
     }
     return writeI2CRegister(invertRegister, PCA9536_REGISTER_POLARITY_INVERSION);
 }
@@ -169,23 +177,23 @@ PCA9536_error_t PCA9536::revert(uint8_t pin)
     return invert(pin, PCA9536_RETAIN);
 }
 
-PCA9536_error_t PCA9536::readI2CBuffer(uint8_t * dest, PCA9536_REGISTER_t startRegister, uint16_t len)
+PCA9536_error_t PCA9536::readI2CBuffer(uint8_t *dest, PCA9536_REGISTER_t startRegister, uint16_t len)
 {
-    PCA9536_DEBUGLN((STORAGE("(readI2CBuffer): read ") + String(len) + 
-                       STORAGE(" @ 0x") + String(startRegister, HEX)));
+    PCA9536_DEBUGLN((STORAGE("(readI2CBuffer): read ") + String(len) +
+                     STORAGE(" @ 0x") + String(startRegister, HEX)));
     if (_deviceAddress == PCA9536_ADDRESS_INVALID)
     {
         PCA9536_DEBUGLN(STORAGE("    ERR (readI2CBuffer): Invalid address"));
         return PCA9536_ERROR_INVALID_ADDRESS;
     }
-    _i2cPort->beginTransmission((uint8_t) _deviceAddress);
+    _i2cPort->beginTransmission((uint8_t)_deviceAddress);
     _i2cPort->write(startRegister);
     if (_i2cPort->endTransmission(false) != 0)
     {
         PCA9536_DEBUGLN(STORAGE("    ERR (readI2CBuffer): End transmission"));
         return PCA9536_ERROR_READ;
     }
-    
+
     _i2cPort->requestFrom((uint8_t)_deviceAddress, (uint8_t)len);
     for (int i = 0; i < len; i++)
     {
@@ -196,14 +204,14 @@ PCA9536_error_t PCA9536::readI2CBuffer(uint8_t * dest, PCA9536_REGISTER_t startR
     return PCA9536_ERROR_SUCCESS;
 }
 
-PCA9536_error_t PCA9536::writeI2CBuffer(uint8_t * src, PCA9536_REGISTER_t startRegister, uint16_t len)
+PCA9536_error_t PCA9536::writeI2CBuffer(uint8_t *src, PCA9536_REGISTER_t startRegister, uint16_t len)
 {
     if (_deviceAddress == PCA9536_ADDRESS_INVALID)
     {
         PCA9536_DEBUGLN(STORAGE("ERR (readI2CBuffer): Invalid address"));
         return PCA9536_ERROR_INVALID_ADDRESS;
     }
-    _i2cPort->beginTransmission((uint8_t) _deviceAddress);
+    _i2cPort->beginTransmission((uint8_t)_deviceAddress);
     _i2cPort->write(startRegister);
     for (int i = 0; i < len; i++)
     {
@@ -216,7 +224,7 @@ PCA9536_error_t PCA9536::writeI2CBuffer(uint8_t * src, PCA9536_REGISTER_t startR
     return PCA9536_ERROR_SUCCESS;
 }
 
-PCA9536_error_t PCA9536::readI2CRegister(uint8_t * dest, PCA9536_REGISTER_t registerAddress)
+PCA9536_error_t PCA9536::readI2CRegister(uint8_t *dest, PCA9536_REGISTER_t registerAddress)
 {
     return readI2CBuffer(dest, registerAddress, 1);
 }

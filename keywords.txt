@@ -16,7 +16,7 @@ SparkFun_PCA9536_Arduino_Library	KEYWORD1
 setDebugStream	KEYWORD2
 invert	KEYWORD2
 revert	KEYWORD2
-readReg KEYWORD2
+readReg	KEYWORD2
 
 #######################################
 # Constants (LITERAL1)

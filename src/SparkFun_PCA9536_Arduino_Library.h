@@ -78,6 +78,9 @@ enum
     PCA9536_BLUE   // 3
 };
 
+// PCA9536 has four GPIO pins: 0-3
+#define PCA9536_MAX_GPIO 3
+
 class PCA9536
 {
 public:

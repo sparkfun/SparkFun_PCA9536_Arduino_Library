@@ -73,7 +73,7 @@ PCA9536_error_t PCA9536::pinMode(uint8_t pin, uint8_t mode)
     PCA9536_error_t err;
     uint8_t cfgRegister = 0;
 
-    if (pin > 4)
+    if (pin > PCA9536_MAX_GPIO)
         return PCA9536_ERROR_UNDEFINED;
 
     err = readI2CRegister(&cfgRegister, PCA9536_REGISTER_CONFIGURATION);
@@ -94,7 +94,7 @@ PCA9536_error_t PCA9536::write(uint8_t pin, uint8_t value)
     PCA9536_error_t err;
     uint8_t outputRegister = 0;
 
-    if (pin > 4)
+    if (pin > PCA9536_MAX_GPIO)
         return PCA9536_ERROR_UNDEFINED;
 
     err = readI2CRegister(&outputRegister, PCA9536_REGISTER_OUTPUT_PORT);
@@ -134,7 +134,7 @@ uint8_t PCA9536::read(uint8_t pin)
     PCA9536_error_t err;
     uint8_t inputRegister = 0;
 
-    if (pin > 4)
+    if (pin > PCA9536_MAX_GPIO)
         return PCA9536_ERROR_UNDEFINED;
 
     err = readI2CRegister(&inputRegister, PCA9536_REGISTER_INPUT_PORT);
@@ -155,7 +155,7 @@ PCA9536_error_t PCA9536::invert(uint8_t pin, PCA9536_invert_t inversion)
     PCA9536_error_t err;
     uint8_t invertRegister = 0;
 
-    if (pin > 4)
+    if (pin > PCA9536_MAX_GPIO)
         return PCA9536_ERROR_UNDEFINED;
 
     err = readI2CRegister(&invertRegister, PCA9536_REGISTER_POLARITY_INVERSION);
